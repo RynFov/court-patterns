@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+
+<title>Court Patterns V2</title>
+
+<style>
+* { box-sizing: border-box; }
+
+:root {
+    --bg: #111;
+    --panel: #1b1b1b;
+    --panel2: #252525;
+    --text: #fff;
+    --muted: #aaa;
+    --court: #397a50;
+    --lime: #dfff00;
+    --blue: #45a7ff;
+    --red: #ff6469;
+    --border: #3c3c3c;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.app {
+    width: min(100%, 820px);
+    margin: auto;
+    padding: 18px 14px 50px;
+}
+
+h1 {
+    text-align: center;
+    margin: 4px 0;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--muted);
+    margin: 6px 0 18px;
+}
+
+/* SPORT */
+
+.sport-selector {
+    max-width: 500px;
+    margin: 0 auto 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+button, select {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+}
+
+.sport-btn {
+    min-height: 46px;
+    border-radius: 10px;
+    background: #303030;
+    color: white;
+    border: 2px solid #444;
+    font-weight: bold;
+}
+
+.sport-btn.active {
+    background: var(--lime);
+    color: #111;
+    border-color: var(--lime);
+}
+
+/* CARD */
+
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
+
+.card-title {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* STATUS */
+
+.status {
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#shotNumber {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+#playerTurn {
+    margin-top: 4px;
+    color: var(--lime);
+    font-weight: bold;
+}
+
+#instruction {
+    margin-top: 8px;
+}
+
+.contact-mode { color: var(--blue); }
+.landing-mode { color: var(--lime); }
+
+/* COURT AREA */
+
+.court-area {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+    margin: 18px auto;
+}
+
+.court {
+    position: relative;
+    width: min(58vw, 360px);
+    aspect-ratio: 36 / 78;
+    background: var(--court);
+    border: 4px solid white;
+    overflow: hidden;
+    touch-action: manipulation;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+/* TENNIS LINES */
+
+.tennis-line,
+.pickle-line {
+    position: absolute;
+    background: white;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.singles-left {
+    width: 3px;
+    height: 100%;
+    left: 12.5%;
+}
+
+.singles-right {
+    width: 3px;
+    height: 100%;
+    right: 12.5%;
+}
+
+.service-top {
+    height: 3px;
+    width: 75%;
+    left: 12.5%;
+    top: 23%;
+}
+
+.service-bottom {
+    height: 3px;
+    width: 75%;
+    left: 12.5%;
+    bottom: 23%;
+}
+
+.center-top {
+    width: 3px;
+    height: 27%;
+    left: 50%;
+    top: 23%;
+}
+
+.center-bottom {
+    width: 3px;
+    height: 27%;
+    left: 50%;
+    bottom: 23%;
+}
+
+/* PICKLEBALL */
+
+.pickleball-lines {
+    display: none;
+}
+
+.court.pickleball {
+    aspect-ratio: 20 / 44;
+}
+
+.court.pickleball .tennis-line {
+    display: none;
+}
+
+.court.pickleball .pickleball-lines {
+    display: block;
+}
+
+.kitchen-top {
+    width: 100%;
+    height: 4px;
+    top: 34.1%;
+}
+
+.kitchen-bottom {
+    width: 100%;
+    height: 4px;
+    bottom: 34.1%;
+}
+
+.pickle-center-top {
+    width: 4px;
+    height: 34.1%;
+    left: 50%;
+    top: 0;
+}
+
+.pickle-center-bottom {
+    width: 4px;
+    height: 34.1%;
+    left: 50%;
+    bottom: 0;
+}
+
+.kitchen-label {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: rgba(255,255,255,.5);
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.kitchen-label.top { top: 40%; }
+.kitchen-label.bottom { bottom: 40%; }
+
+/* NET */
+
+.net {
+    position: absolute;
+    width: 100%;
+    height: 12px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #111;
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.net::before,
+.net::after {
+    content: "";
+    position: absolute;
+    width: 7px;
+    height: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+}
+
+.net::before { left: 0; }
+.net::after { right: 0; }
+
+/* PATHS */
+
+#paths {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 6;
+    pointer-events: none;
+}
+
+/* CONTACT BADGE */
+
+.shot-badge {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: #111;
+    color: white;
+    border: 2px solid var(--blue);
+    border-radius: 7px;
+    padding: 3px 5px;
+    min-width: 42px;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    z-index: 9;
+    pointer-events: none;
+}
+
+/* LANDING */
+
+.landing-marker {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: var(--lime);
+    color: #111;
+    border: 2px solid #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 9;
+    pointer-events: none;
+}
+
+.temp-contact {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    background: #111;
+    border: 3px solid var(--blue);
+    z-index: 9;
+    pointer-events: none;
+}
+
+/* LEGEND */
+
+.legend {
+    width: 190px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: left;
+}
+
+.legend-title {
+    color: var(--lime);
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.legend-section {
+    color: #777;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin: 12px 0 6px;
+}
+
+.legend-row {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 5px;
+    font-size: 12px;
+    margin: 6px 0;
+}
+
+.legend-symbol {
+    font-weight: bold;
+    color: var(--lime);
+}
+
+/* FORM */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.field label {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+select {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid #444;
+    border-radius: 9px;
+    background: var(--panel2);
+    color: white;
+    padding: 8px;
+}
+
+/* ACTIONS */
+
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-bottom: 14px;
+}
+
+.action-btn {
+    min-height: 46px;
+    border-radius: 9px;
+    background: #333;
+    color: white;
+    font-weight: bold;
+}
+
+.primary {
+    background: var(--lime);
+    color: #111;
+}
+
+.danger {
+    background: #432124;
+    color: #ffb7ba;
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+/* HISTORY */
+
+.shot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.shot-row {
+    background: var(--panel2);
+    padding: 10px;
+    border-radius: 9px;
+    font-size: 13px;
+}
+
+.shot-row strong {
+    color: var(--lime);
+}
+
+.empty {
+    color: #777;
+    text-align: center;
+    padding: 10px;
+}
+
+/* SAVED */
+
+.saved-pattern {
+    background: var(--panel2);
+    border-radius: 10px;
+    padding: 11px;
+    margin-bottom: 8px;
+}
+
+.saved-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.saved-name {
+    font-weight: bold;
+}
+
+.saved-meta {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.saved-buttons {
+    display: flex;
+    gap: 6px;
+    margin-top: 9px;
+}
+
+.small-btn {
+    min-height: 34px;
+    border-radius: 7px;
+    padding: 5px 10px;
+    background: #3a3a3a;
+    color: white;
+}
+
+.delete-btn {
+    background: #432124;
+    color: #ffb7ba;
+}
+
+/* STATS */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.stat {
+    background: var(--panel2);
+    border-radius: 10px;
+    text-align: center;
+    padding: 12px 4px;
+}
+
+.stat-number {
+    color: var(--lime);
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+    .app {
+        max-width: 500px;
+    }
+
+    .court-area {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .court {
+        width: min(88vw, 360px);
+    }
+
+    .legend {
+        width: min(88vw, 360px);
+    }
+
+    .legend-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 14px;
+    }
+
+    .legend-section {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 380px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>🎾 Court Patterns</h1>
+<p class="subtitle">Record the pattern. See the shot.</p>
+
+<div class="sport-selector">
+    <button id="tennisBtn" class="sport-btn active">🎾 Tennis</button>
+    <button id="pickleBtn" class="sport-btn">Pickleball</button>
+</div>
+
+<div class="card status">
+    <div id="shotNumber">Shot 1</div>
+    <div id="playerTurn">YOU</div>
+    <div id="instruction" class="contact-mode">
+        Tap the CONTACT point
+    </div>
+</div>
+
+<div class="court-area">
+
+<div id="court" class="court">
+
+    <svg id="paths"></svg>
+
+    <!-- TENNIS -->
+    <div class="tennis-line singles-left"></div>
+    <div class="tennis-line singles-right"></div>
+    <div class="tennis-line service-top"></div>
+    <div class="tennis-line service-bottom"></div>
+    <div class="tennis-line center-top"></div>
+    <div class="tennis-line center-bottom"></div>
+
+    <!-- PICKLEBALL -->
+    <div class="pickleball-lines">
+        <div class="pickle-line kitchen-top"></div>
+        <div class="pickle-line kitchen-bottom"></div>
+        <div class="pickle-line pickle-center-top"></div>
+        <div class="pickle-line pickle-center-bottom"></div>
+
+        <div class="kitchen-label top">KITCHEN</div>
+        <div class="kitchen-label bottom">KITCHEN</div>
+    </div>
+
+    <div class="net"></div>
+
+</div>
+
+<!-- DYNAMIC LEGEND -->
+
+<div class="legend">
+    <div class="legend-title">SHOT LEGEND</div>
+    <div id="legendContent" class="legend-content"></div>
+</div>
+
+</div>
+
+
+<!-- SHOT DETAILS -->
+
+<div class="card">
+
+<div class="card-title">Shot Details</div>
+
+<div class="form-grid">
+
+<div class="field">
+<label>Stroke</label>
+<select id="stroke"></select>
+</div>
+
+<div class="field">
+<label>Ball Type</label>
+<select id="ballType"></select>
+</div>
+
+<div class="field">
+<label>Intent</label>
+<select id="intent">
+    <option>Neutral</option>
+    <option>Setup</option>
+    <option>Attack</option>
+    <option>Defend</option>
+    <option>Finish</option>
+</select>
+</div>
+
+<div class="field">
+<label>Result</label>
+<select id="result">
+    <option>In Play</option>
+    <option>Winner</option>
+    <option>Forced Error</option>
+    <option>Unforced Error</option>
+</select>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- BUTTONS -->
+
+<div class="actions">
+
+<button id="undoBtn" class="action-btn">
+↶ Undo
+</button>
+
+<button id="removeBtn" class="action-btn">
+Remove Last Shot
+</button>
+
+<button id="newBtn" class="action-btn danger full">
+New Point
+</button>
+
+<button id="saveBtn" class="action-btn primary full">
+✓ Save Pattern
+</button>
+
+</div>
+
+
+<!-- CURRENT RALLY -->
+
+<div class="card">
+
+<div class="card-title">Current Rally</div>
+
+<div id="history" class="shot-list">
+    <div class="empty">No shots yet.</div>
+</div>
+
+</div>
+
+
+<!-- STATS -->
+
+<div class="card">
+
+<div class="card-title">Stats</div>
+
+<div class="stats">
+
+<div class="stat">
+    <div id="patternCount" class="stat-number">0</div>
+    <div class="stat-label">Patterns</div>
+</div>
+
+<div class="stat">
+    <div id="winnerCount" class="stat-number">0</div>
+    <div class="stat-label">Winners</div>
+</div>
+
+<div class="stat">
+    <div id="totalShots" class="stat-number">0</div>
+    <div class="stat-label">Shots</div>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SAVED -->
+
+<div class="card">
+
+<div class="card-title">Saved Patterns</div>
+
+<div id="savedPatterns">
+    <div class="empty">No saved patterns yet.</div>
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const court = document.getElementById("court");
+const paths = document.getElementById("paths");
+
+const tennisBtn = document.getElementById("tennisBtn");
+const pickleBtn = document.getElementById("pickleBtn");
+
+const strokeSelect = document.getElementById("stroke");
+const ballTypeSelect = document.getElementById("ballType");
+const intentSelect = document.getElementById("intent");
+const resultSelect = document.getElementById("result");
+
+const shotNumber = document.getElementById("shotNumber");
+const playerTurn = document.getElementById("playerTurn");
+const instruction = document.getElementById("instruction");
+
+const historyBox = document.getElementById("history");
+const savedBox = document.getElementById("savedPatterns");
+
+const legendContent = document.getElementById("legendContent");
+
+
+/* =========================
+   SPORT DATA
+========================= */
+
+const tennisStrokes = [
+    "Serve",
+    "Return",
+    "Forehand",
+    "Backhand",
+    "Volley",
+    "Overhead"
+];
+
+const tennisBallTypes = [
+    "Topspin",
+    "Flat",
+    "Slice",
+    "Drop",
+    "Lob"
+];
+
+const pickleStrokes = [
+    "Serve",
+    "Return",
+    "Forehand",
+    "Backhand",
+    "Volley",
+    "Overhead"
+];
+
+const pickleBallTypes = [
+    "Drive",
+    "Dink",
+    "Drop",
+    "Reset",
+    "Speedup",
+    "Lob"
+];
+
+
+/* =========================
+   SYMBOLS
+========================= */
+
+function strokeCode(stroke) {
+
+    const codes = {
+        "Serve": "S",
+        "Return": "R",
+        "Forehand": "FH",
+        "Backhand": "BH",
+        "Volley": "V",
+        "Overhead": "OH"
+    };
+
+    return codes[stroke] || stroke;
+}
+
+
+function ballSymbol(ball) {
+
+    const symbols = {
+        "Topspin": "↻",
+        "Flat": "→",
+        "Slice": "╱",
+        "Drop": "↓",
+        "Lob": "↑",
+
+        "Drive": "→",
+        "Dink": "⌒",
+        "Reset": "↘",
+        "Speedup": "⚡"
+    };
+
+    return symbols[ball] || "•";
+}
+
+
+/* =========================
+   STATE
+========================= */
+
+let sport = "tennis";
+let shots = [];
+let pendingContact = null;
+
+
+/* =========================
+   SELECT OPTIONS
+========================= */
+
+function fillSelect(select, options) {
+
+    select.innerHTML = "";
+
+    options.forEach(value => {
+
+        const option = document.createElement("option");
+
+        option.value = value;
+        option.textContent = value;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+function configureSport() {
+
+    if (sport === "tennis") {
+
+        fillSelect(
+            strokeSelect,
+            tennisStrokes
+        );
+
+        fillSelect(
+            ballTypeSelect,
+            tennisBallTypes
+        );
+
+        strokeSelect.value = "Serve";
+        ballTypeSelect.value = "Flat";
+
+    } else {
+
+        fillSelect(
+            strokeSelect,
+            pickleStrokes
+        );
+
+        fillSelect(
+            ballTypeSelect,
+            pickleBallTypes
+        );
+
+        strokeSelect.value = "Serve";
+        ballTypeSelect.value = "Drive";
+
+    }
+
+    renderLegend();
+
+}
+
+
+/* =========================
+   LEGEND
+========================= */
+
+function renderLegend() {
+
+    if (sport === "tennis") {
+
+        legendContent.innerHTML = `
+
+            <div class="legend-section">STROKE</div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">FH</span>
+                <span>Forehand</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">BH</span>
+                <span>Backhand</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">S</span>
+                <span>Serve</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">R</span>
+                <span>Return</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">V</span>
+                <span>Volley</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">OH</span>
+                <span>Overhead</span>
+            </div>
+
+            <div class="legend-section">BALL TYPE</div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">↻</span>
+                <span>Topspin</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">→</span>
+                <span>Flat</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">╱</span>
+                <span>Slice</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">↓</span>
+                <span>Drop Shot</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">↑</span>
+                <span>Lob</span>
+            </div>
+
+            <div class="legend-section">RESULT</div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">★</span>
+                <span>Winner</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">×</span>
+                <span>Error</span>
+            </div>
+        `;
+
+    } else {
+
+        legendContent.innerHTML = `
+
+            <div class="legend-section">PICKLEBALL</div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">→</span>
+                <span>Drive</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">⌒</span>
+                <span>Dink</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">↓</span>
+                <span>Drop</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">↘</span>
+                <span>Reset</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">⚡</span>
+                <span>Speedup</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">↑</span>
+                <span>Lob</span>
+            </div>
+
+            <div class="legend-section">RESULT</div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">★</span>
+                <span>Winner</span>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-symbol">×</span>
+                <span>Error</span>
+            </div>
+        `;
+
+    }
+
+}
+
+
+/* =========================
+   SPORT SWITCH
+========================= */
+
+tennisBtn.onclick = () => {
+
+    sport = "tennis";
+
+    court.classList.remove("pickleball");
+
+    tennisBtn.classList.add("active");
+    pickleBtn.classList.remove("active");
+
+    resetCurrentPoint();
+    configureSport();
+
+};
+
+
+pickleBtn.onclick = () => {
+
+    sport = "pickleball";
+
+    court.classList.add("pickleball");
+
+    pickleBtn.classList.add("active");
+    tennisBtn.classList.remove("active");
+
+    resetCurrentPoint();
+    configureSport();
+
+};
+
+
+/* =========================
+   COURT TAP
+========================= */
+
+court.addEventListener("click", event => {
+
+    const rect =
+        court.getBoundingClientRect();
+
+    const x =
+        ((event.clientX - rect.left) /
+        rect.width) * 100;
+
+    const y =
+        ((event.clientY - rect.top) /
+        rect.height) * 100;
+
+
+    /* First tap = contact */
+
+    if (!pendingContact) {
+
+        pendingContact = { x, y };
+
+        drawCourt();
+        updateStatus();
+
+        return;
+    }
+
+
+    /* Second tap = landing */
+
+    const player =
+        shots.length % 2 === 0
+        ? "You"
+        : "Opponent";
+
+
+    const shot = {
+
+        number: shots.length + 1,
+
+        player: player,
+
+        contact: pendingContact,
+
+        landing: { x, y },
+
+        stroke: strokeSelect.value,
+
+        ballType: ballTypeSelect.value,
+
+        intent: intentSelect.value,
+
+        result: resultSelect.value
+
+    };
+
+
+    shots.push(shot);
+
+    pendingContact = null;
+
+
+    smartNextSelection();
+
+
+    drawCourt();
+    renderHistory();
+    updateStatus();
+
+});
+
+
+/* =========================
+   SMART NEXT SHOT
+========================= */
+
+function smartNextSelection() {
+
+    if (sport === "tennis") {
+
+        if (shots.length === 1) {
+
+            strokeSelect.value =
+                "Return";
+
+        } else {
+
+            strokeSelect.value =
+                "Forehand";
+
+        }
+
+    }
+
+    if (sport === "pickleball") {
+
+        if (shots.length === 1) {
+
+            strokeSelect.value =
+                "Return";
+
+        } else {
+
+            strokeSelect.value =
+                "Forehand";
+
+        }
+
+    }
+
+
+    intentSelect.value =
+        "Neutral";
+
+    resultSelect.value =
+        "In Play";
+
+}
+
+
+/* =========================
+   DRAW
+========================= */
+
+function drawCourt() {
+
+    court
+        .querySelectorAll(
+            ".shot-badge, .landing-marker, .temp-contact"
+        )
+        .forEach(el => el.remove());
+
+
+    paths.innerHTML = "";
+
+
+    shots.forEach(shot => {
+
+        drawPath(shot);
+
+        drawBadge(shot);
+
+        drawLanding(shot);
+
+    });
+
+
+    if (pendingContact) {
+
+        const temp =
+            document.createElement("div");
+
+        temp.className =
+            "temp-contact";
+
+        temp.style.left =
+            pendingContact.x + "%";
+
+        temp.style.top =
+            pendingContact.y + "%";
+
+        court.appendChild(temp);
+
+    }
+
+}
+
+
+/* =========================
+   PATH
+========================= */
+
+function drawPath(shot) {
+
+    const line =
+        document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "line"
+        );
+
+
+    line.setAttribute(
+        "x1",
+        shot.contact.x + "%"
+    );
+
+    line.setAttribute(
+        "y1",
+        shot.contact.y + "%"
+    );
+
+    line.setAttribute(
+        "x2",
+        shot.landing.x + "%"
+    );
+
+    line.setAttribute(
+        "y2",
+        shot.landing.y + "%"
+    );
+
+
+    line.setAttribute(
+        "stroke",
+        shot.player === "You"
+        ? "#dfff00"
+        : "#ffffff"
+    );
+
+
+    line.setAttribute(
+        "stroke-width",
+        "3"
+    );
+
+
+    line.setAttribute(
+        "stroke-dasharray",
+        "7 5"
+    );
+
+
+    paths.appendChild(line);
+
+}
+
+
+/* =========================
+   SHOT BADGE
+========================= */
+
+function drawBadge(shot) {
+
+    const badge =
+        document.createElement("div");
+
+
+    badge.className =
+        "shot-badge";
+
+
+    badge.style.left =
+        shot.contact.x + "%";
+
+
+    badge.style.top =
+        shot.contact.y + "%";
+
+
+    badge.textContent =
+        shot.number +
+        " " +
+        strokeCode(shot.stroke) +
+        " " +
+        ballSymbol(shot.ballType);
+
+
+    court.appendChild(badge);
+
+}
+
+
+/* =========================
+   LANDING
+========================= */
+
+function drawLanding(shot) {
+
+    const marker =
+        document.createElement("div");
+
+
+    marker.className =
+        "landing-marker";
+
+
+    marker.style.left =
+        shot.landing.x + "%";
+
+
+    marker.style.top =
+        shot.landing.y + "%";
+
+
+    if (shot.result === "Winner") {
+
+        marker.textContent = "★";
+
+    }
+
+    else if (
+        shot.result === "Forced Error" ||
+        shot.result === "Unforced Error"
+    ) {
+
+        marker.textContent = "×";
+
+    }
+
+    else {
+
+        marker.textContent =
+            shot.number;
+
+    }
+
+
+    court.appendChild(marker);
+
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function updateStatus() {
+
+    shotNumber.textContent =
+        "Shot " + (shots.length + 1);
+
+
+    playerTurn.textContent =
+        shots.length % 2 === 0
+        ? "YOU"
+        : "OPPONENT";
+
+
+    if (pendingContact) {
+
+        instruction.textContent =
+            "Now tap where the ball LANDS";
+
+        instruction.className =
+            "landing-mode";
+
+    } else {
+
+        instruction.textContent =
+            "Tap the CONTACT point";
+
+        instruction.className =
+            "contact-mode";
+
+    }
+
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function renderHistory() {
+
+    if (!shots.length) {
+
+        historyBox.innerHTML =
+            '<div class="empty">No shots yet.</div>';
+
+        return;
+    }
+
+
+    historyBox.innerHTML = "";
+
+
+    shots.forEach(shot => {
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "shot-row";
+
+
+        row.innerHTML = `
+
+            <strong>
+                ${shot.number}.
+                ${shot.player}
+            </strong>
+
+            —
+            ${strokeCode(shot.stroke)}
+            ${ballSymbol(shot.ballType)}
+            ${shot.stroke}
+            ${shot.ballType}
+
+            · ${shot.intent}
+            · ${shot.result}
+        `;
+
+
+        historyBox.appendChild(row);
+
+    });
+
+}
+
+
+/* =========================
+   UNDO
+========================= */
+
+document.getElementById("undoBtn").onclick =
+() => {
+
+    if (pendingContact) {
+
+        pendingContact = null;
+
+    } else {
+
+        shots.pop();
+
+    }
+
+    drawCourt();
+    renderHistory();
+    updateStatus();
+
+};
+
+
+/* =========================
+   REMOVE SHOT
+========================= */
+
+document.getElementById("removeBtn").onclick =
+() => {
+
+    pendingContact = null;
+
+    shots.pop();
+
+    drawCourt();
+    renderHistory();
+    updateStatus();
+
+};
+
+
+/* =========================
+   NEW POINT
+========================= */
+
+document.getElementById("newBtn").onclick =
+() => {
+
+    if (
+        shots.length &&
+        !confirm("Clear current point?")
+    ) {
+        return;
+    }
+
+    resetCurrentPoint();
+
+};
+
+
+function resetCurrentPoint() {
+
+    shots = [];
+    pendingContact = null;
+
+    drawCourt();
+    renderHistory();
+    updateStatus();
+
+}
+
+
+/* =========================
+   SAVE
+========================= */
+
+document.getElementById("saveBtn").onclick =
+() => {
+
+    if (!shots.length) {
+
+        alert("Record a shot first.");
+
+        return;
+    }
+
+
+    const patterns =
+        getPatterns();
+
+
+    patterns.unshift({
+
+        id: Date.now(),
+
+        sport: sport,
+
+        date: new Date().toLocaleString(),
+
+        shots: JSON.parse(
+            JSON.stringify(shots)
+        )
+
+    });
+
+
+    localStorage.setItem(
+        "courtPatternsV2",
+        JSON.stringify(patterns)
+    );
+
+
+    renderSaved();
+    renderStats();
+
+    alert("Pattern saved ✓");
+
+    resetCurrentPoint();
+
+};
+
+
+/* =========================
+   STORAGE
+========================= */
+
+function getPatterns() {
+
+    try {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "courtPatternsV2"
+            )
+        ) || [];
+
+    }
+
+    catch {
+
+        return [];
+
+    }
+
+}
+
+
+/* =========================
+   SAVED PATTERNS
+========================= */
+
+function renderSaved() {
+
+    const patterns =
+        getPatterns();
+
+
+    if (!patterns.length) {
+
+        savedBox.innerHTML =
+            '<div class="empty">No saved patterns yet.</div>';
+
+        return;
+    }
+
+
+    savedBox.innerHTML = "";
+
+
+    patterns.forEach((pattern, index) => {
+
+        const div =
+            document.createElement("div");
+
+
+        div.className =
+            "saved-pattern";
+
+
+        const winner =
+            pattern.shots.some(
+                shot =>
+                shot.result === "Winner"
+            );
+
+
+        div.innerHTML = `
+
+            <div class="saved-head">
+
+                <div>
+
+                    <div class="saved-name">
+
+                        ${
+                            pattern.sport === "tennis"
+                            ? "🎾 Tennis"
+                            : "Pickleball"
+                        }
+
+                        Pattern ${patterns.length - index}
+
+                    </div>
+
+                    <div class="saved-meta">
+
+                        ${pattern.shots.length} shots
+
+                        ${winner ? " · ★ Winner" : ""}
+
+                    </div>
+
+                    <div class="saved-meta">
+                        ${pattern.date}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="saved-buttons">
+
+                <button
+                    class="small-btn"
+                    onclick="loadPattern(${pattern.id})">
+                    View
+                </button>
+
+                <button
+                    class="small-btn delete-btn"
+                    onclick="deletePattern(${pattern.id})">
+                    Delete
+                </button>
+
+            </div>
+        `;
+
+
+        savedBox.appendChild(div);
+
+    });
+
+}
+
+
+/* =========================
+   LOAD PATTERN
+========================= */
+
+function loadPattern(id) {
+
+    const pattern =
+        getPatterns().find(
+            p => p.id === id
+        );
+
+
+    if (!pattern) return;
+
+
+    sport =
+        pattern.sport;
+
+
+    if (sport === "pickleball") {
+
+        court.classList.add(
+            "pickleball"
+        );
+
+        pickleBtn.classList.add(
+            "active"
+        );
+
+        tennisBtn.classList.remove(
+            "active"
+        );
+
+    } else {
+
+        court.classList.remove(
+            "pickleball"
+        );
+
+        tennisBtn.classList.add(
+            "active"
+        );
+
+        pickleBtn.classList.remove(
+            "active"
+        );
+
+    }
+
+
+    configureSport();
+
+
+    shots =
+        JSON.parse(
+            JSON.stringify(
+                pattern.shots
+            )
+        );
+
+
+    pendingContact = null;
+
+
+    drawCourt();
+    renderHistory();
+    updateStatus();
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================
+   DELETE PATTERN
+========================= */
+
+function deletePattern(id) {
+
+    if (!confirm("Delete this pattern?")) {
+        return;
+    }
+
+
+    const patterns =
+        getPatterns().filter(
+            p => p.id !== id
+        );
+
+
+    localStorage.setItem(
+        "courtPatternsV2",
+        JSON.stringify(patterns)
+    );
+
+
+    renderSaved();
+    renderStats();
+
+}
+
+
+/* =========================
+   STATS
+========================= */
+
+function renderStats() {
+
+    const patterns =
+        getPatterns();
+
+
+    let shotsTotal = 0;
+    let winners = 0;
+
+
+    patterns.forEach(pattern => {
+
+        shotsTotal +=
+            pattern.shots.length;
+
+
+        winners +=
+            pattern.shots.filter(
+                shot =>
+                shot.result === "Winner"
+            ).length;
+
+    });
+
+
+    document.getElementById(
+        "patternCount"
+    ).textContent =
+        patterns.length;
+
+
+    document.getElementById(
+        "winnerCount"
+    ).textContent =
+        winners;
+
+
+    document.getElementById(
+        "totalShots"
+    ).textContent =
+        shotsTotal;
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+configureSport();
+
+resetCurrentPoint();
+
+renderSaved();
+
+renderStats();
+
+</script>
+
+</body>
+</html>
